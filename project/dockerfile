@@ -1,0 +1,8 @@
+FROM maven:3.3-jdk-8
+
+WORKDIR /lavagna
+
+COPY . .
+
+RUN mvn verify
+
