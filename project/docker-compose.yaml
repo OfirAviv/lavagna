@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf/nginx.conf:/etc/nginx/conf.d/deafault.conf
+      - ./src/main/webapp:/static
+    depends_on:
+      - app
+    ports:
+      - '80:80'
+    networks:
+      - maven-net
+
+  app:
+    container_name: app
+    build: .
+    ports:
+      - "8080"
+    networks:
+      - maven-net
+    depends_on:
+      mysql:
+        condition: service_healthy 
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - data:/var/lib/mysql
+      - ./datadump:/docker-entrypoint-initdb.d
+    networks:
+      - maven-net
+    environment:
+       MYSQL_ROOT_PASSWORD: 12345
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-uroot', '-p12345']
+      interval: 5s
+      timeout: 5s
+      retries: 10 
+
+networks:
+  maven-net:
+
+volumes:
+  data:
