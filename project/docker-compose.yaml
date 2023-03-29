@@ -13,7 +13,7 @@ services:
       - '80:80'
       - '8081:8081'
     networks:
-      - maven-net
+      - frontend
 
   app:
     container_name: app
@@ -21,7 +21,8 @@ services:
     ports:
       - "8080"
     networks:
-      - maven-net
+      - frontend
+      - backend
     depends_on:
       mysql:
         condition: service_healthy 
@@ -31,7 +32,8 @@ services:
       context: .
       dockerfile: docs.Dockerfile
     networks:
-    - maven-net
+      - frontend
+      - backend
     ports:
       - "45001"
 
@@ -41,7 +43,7 @@ services:
       - data:/var/lib/mysql
       - ./datadump:/docker-entrypoint-initdb.d
     networks:
-      - maven-net
+      - backend
     environment:
        MYSQL_ROOT_PASSWORD: 12345
     healthcheck:
@@ -51,7 +53,8 @@ services:
       retries: 10 
 
 networks:
-  maven-net:
+  frontend:
+  backend:
 
 volumes:
   data:
